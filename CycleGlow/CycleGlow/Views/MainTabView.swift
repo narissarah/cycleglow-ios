@@ -13,6 +13,11 @@ struct MainTabView: View {
                     Label("Skincare", systemImage: "sparkles")
                 }
             
+            ProductScannerView()
+                .tabItem {
+                    Label("Scanner", systemImage: "camera.viewfinder")
+                }
+            
             NutritionView()
                 .tabItem {
                     Label("Nutrition", systemImage: "leaf.fill")

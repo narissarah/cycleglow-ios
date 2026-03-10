@@ -256,6 +256,8 @@
 				DEVELOPMENT_TEAM = V3VUMY2C3U;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSCameraUsageDescription = "CycleGlow needs camera access to scan skincare product labels and analyze ingredients for your cycle phase.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "CycleGlow needs photo library access to select skincare product photos for ingredient analysis.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -288,6 +290,8 @@
 				DEVELOPMENT_TEAM = V3VUMY2C3U;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSCameraUsageDescription = "CycleGlow needs camera access to scan skincare product labels and analyze ingredients for your cycle phase.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "CycleGlow needs photo library access to select skincare product photos for ingredient analysis.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
