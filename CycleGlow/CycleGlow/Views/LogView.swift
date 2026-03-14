@@ -22,7 +22,7 @@ struct LogView: View {
                                         .padding(8)
                                         .background(
                                             viewModel.todayMood == level
-                                                ? Color(hex: "8B5CF6").opacity(0.2)
+                                                ? Theme.purple.opacity(0.2)
                                                 : Color.clear
                                         )
                                         .clipShape(Circle())
@@ -48,14 +48,14 @@ struct LogView: View {
                                     .padding(.vertical, 8)
                                     .background(
                                         viewModel.todaySkin == condition
-                                            ? Color(hex: "EC4899").opacity(0.2)
+                                            ? Theme.pink.opacity(0.2)
                                             : Color.gray.opacity(0.08)
                                     )
                                     .clipShape(RoundedRectangle(cornerRadius: 10))
                                 }
                                 .foregroundColor(
                                     viewModel.todaySkin == condition
-                                        ? Color(hex: "EC4899")
+                                        ? Theme.pink
                                         : .secondary
                                 )
                             }
@@ -73,7 +73,7 @@ struct LogView: View {
                                         .font(.title3)
                                         .foregroundColor(
                                             level <= viewModel.todayEnergy
-                                                ? Color(hex: "F59E0B")
+                                                ? Theme.amber
                                                 : .gray.opacity(0.3)
                                         )
                                 }
@@ -102,12 +102,12 @@ struct LogView: View {
                                     .padding(.vertical, 8)
                                     .background(
                                         viewModel.todaySymptoms.contains(symptom)
-                                            ? Color(hex: "E11D48").opacity(0.15)
+                                            ? Theme.rose.opacity(0.15)
                                             : Color.gray.opacity(0.08)
                                     )
                                     .foregroundColor(
                                         viewModel.todaySymptoms.contains(symptom)
-                                            ? Color(hex: "E11D48")
+                                            ? Theme.rose
                                             : .secondary
                                     )
                                     .clipShape(RoundedRectangle(cornerRadius: 8))
@@ -142,27 +142,18 @@ struct LogView: View {
                         .frame(maxWidth: .infinity)
                         .padding()
                         .background(
-                            LinearGradient(
-                                colors: showSaved
-                                    ? [.green, .green.opacity(0.8)]
-                                    : [Color(hex: "8B5CF6"), Color(hex: "EC4899")],
-                                startPoint: .leading,
-                                endPoint: .trailing
-                            )
+                            showSaved
+                                ? Theme.successGradient
+                                : Theme.primaryGradient
                         )
-                        .clipShape(RoundedRectangle(cornerRadius: 16))
+                        .clipShape(RoundedRectangle(cornerRadius: Theme.buttonRadius))
                     }
                     .padding(.horizontal)
                 }
                 .padding(.bottom, 20)
             }
             .background(
-                LinearGradient(
-                    colors: [Color(hex: "F5F3FF"), Color(hex: "FFF7ED")],
-                    startPoint: .top,
-                    endPoint: .bottom
-                )
-                .ignoresSafeArea()
+                Theme.backgroundLight.ignoresSafeArea()
             )
             .navigationTitle("Daily Log")
         }
@@ -172,7 +163,7 @@ struct LogView: View {
         VStack(alignment: .leading, spacing: 10) {
             HStack(spacing: 6) {
                 Image(systemName: icon)
-                    .foregroundColor(Color(hex: "8B5CF6"))
+                    .foregroundColor(Theme.purple)
                 Text(title)
                     .font(.subheadline.bold())
             }
@@ -180,7 +171,7 @@ struct LogView: View {
         }
         .padding()
         .background(.ultraThinMaterial)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .clipShape(RoundedRectangle(cornerRadius: Theme.cardRadius))
         .padding(.horizontal)
     }
     

@@ -8,12 +8,7 @@ struct OnboardingView: View {
         @Bindable var vm = viewModel
         
         ZStack {
-            LinearGradient(
-                colors: [Color(hex: "F5F3FF"), Color(hex: "FFF1F2")],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-            .ignoresSafeArea()
+            Theme.backgroundPink.ignoresSafeArea()
             
             VStack(spacing: 30) {
                 Spacer()
@@ -28,26 +23,36 @@ struct OnboardingView: View {
                 
                 Spacer()
                 
-                Button {
-                    if step < 2 {
-                        withAnimation { step += 1 }
-                    } else {
-                        viewModel.completeOnboarding()
+                // Navigation buttons
+                HStack(spacing: 12) {
+                    if step > 0 {
+                        Button {
+                            withAnimation { step -= 1 }
+                        } label: {
+                            Image(systemName: "chevron.left")
+                                .font(.headline)
+                                .foregroundColor(Theme.purple)
+                                .frame(width: 50, height: 50)
+                                .background(.ultraThinMaterial)
+                                .clipShape(RoundedRectangle(cornerRadius: 12))
+                        }
                     }
-                } label: {
-                    Text(step < 2 ? "Continue" : "Get Started")
-                        .font(.headline)
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(
-                            LinearGradient(
-                                colors: [Color(hex: "8B5CF6"), Color(hex: "EC4899")],
-                                startPoint: .leading,
-                                endPoint: .trailing
-                            )
-                        )
-                        .clipShape(RoundedRectangle(cornerRadius: 16))
+                    
+                    Button {
+                        if step < 2 {
+                            withAnimation { step += 1 }
+                        } else {
+                            viewModel.completeOnboarding()
+                        }
+                    } label: {
+                        Text(step < 2 ? "Continue" : "Get Started")
+                            .font(.headline)
+                            .foregroundColor(.white)
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(Theme.primaryGradient)
+                            .clipShape(RoundedRectangle(cornerRadius: Theme.buttonRadius))
+                    }
                 }
                 .padding(.horizontal, 30)
                 .padding(.bottom, 40)
@@ -59,17 +64,11 @@ struct OnboardingView: View {
         VStack(spacing: 16) {
             Image(systemName: "sparkles")
                 .font(.system(size: 60))
-                .foregroundStyle(
-                    LinearGradient(
-                        colors: [Color(hex: "8B5CF6"), Color(hex: "EC4899")],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
+                .foregroundStyle(Theme.primaryGradient)
             
             Text("CycleGlow")
                 .font(.largeTitle.bold())
-                .foregroundColor(Color(hex: "1E1B4B"))
+                .foregroundColor(Theme.navy)
             
             Text("AI-powered skincare & nutrition\nfor every phase of your cycle")
                 .font(.body)
@@ -83,16 +82,16 @@ struct OnboardingView: View {
         return VStack(spacing: 16) {
             Image(systemName: "calendar")
                 .font(.system(size: 40))
-                .foregroundColor(Color(hex: "E11D48"))
+                .foregroundColor(Theme.rose)
             
             Text("When did your last period start?")
                 .font(.title3.bold())
-                .foregroundColor(Color(hex: "1E1B4B"))
+                .foregroundColor(Theme.navy)
             
             DatePicker("", selection: $vm.lastPeriodStart, in: ...Date(), displayedComponents: .date)
                 .datePickerStyle(.graphical)
                 .padding(.horizontal)
-                .tint(Color(hex: "8B5CF6"))
+                .tint(Theme.purple)
         }
     }
     
@@ -101,11 +100,11 @@ struct OnboardingView: View {
         return VStack(spacing: 24) {
             Image(systemName: "arrow.triangle.2.circlepath")
                 .font(.system(size: 40))
-                .foregroundColor(Color(hex: "8B5CF6"))
+                .foregroundColor(Theme.purple)
             
             Text("About your cycle")
                 .font(.title3.bold())
-                .foregroundColor(Color(hex: "1E1B4B"))
+                .foregroundColor(Theme.navy)
             
             VStack(spacing: 16) {
                 HStack {
@@ -124,7 +123,7 @@ struct OnboardingView: View {
             }
             .padding()
             .background(.ultraThinMaterial)
-            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .clipShape(RoundedRectangle(cornerRadius: Theme.cardRadius))
             .padding(.horizontal, 30)
         }
     }

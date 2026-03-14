@@ -16,7 +16,7 @@ struct HormoneChartView: View {
                                 x: .value("Day", point.day),
                                 y: .value("Level", point.estrogen)
                             )
-                            .foregroundStyle(Color(hex: "EC4899"))
+                            .foregroundStyle(Theme.pink)
                             .interpolationMethod(.catmullRom)
                             .lineStyle(StrokeStyle(lineWidth: 2))
                         }
@@ -28,7 +28,7 @@ struct HormoneChartView: View {
                                 x: .value("Day", point.day),
                                 y: .value("Level", point.progesterone)
                             )
-                            .foregroundStyle(Color(hex: "8B5CF6"))
+                            .foregroundStyle(Theme.purple)
                             .interpolationMethod(.catmullRom)
                             .lineStyle(StrokeStyle(lineWidth: 2))
                         }
@@ -38,7 +38,7 @@ struct HormoneChartView: View {
                                 x: .value("Day", point.day),
                                 y: .value("Level", point.lh)
                             )
-                            .foregroundStyle(Color(hex: "3B82F6"))
+                            .foregroundStyle(Theme.blue)
                             .interpolationMethod(.catmullRom)
                             .lineStyle(StrokeStyle(lineWidth: 2))
                         }
@@ -48,7 +48,7 @@ struct HormoneChartView: View {
                                 x: .value("Day", point.day),
                                 y: .value("Level", point.fsh)
                             )
-                            .foregroundStyle(Color(hex: "10B981"))
+                            .foregroundStyle(Theme.green)
                             .interpolationMethod(.catmullRom)
                             .lineStyle(StrokeStyle(lineWidth: 2))
                         }
@@ -67,7 +67,7 @@ struct HormoneChartView: View {
                     .padding()
                     .chartXScale(domain: 1...28)
                     .chartXAxis {
-                        AxisMarks(values: [1, 5, 10, 14, 17, 21, 28]) { value in
+                        AxisMarks(values: [1, 5, 10, 14, 17, 21, 28]) { _ in
                             AxisGridLine()
                             AxisValueLabel()
                         }
@@ -76,12 +76,12 @@ struct HormoneChartView: View {
                     // Legend
                     VStack(spacing: 8) {
                         HStack(spacing: 20) {
-                            legendDot(color: Color(hex: "EC4899"), label: "Estrogen")
-                            legendDot(color: Color(hex: "8B5CF6"), label: "Progesterone")
+                            legendDot(color: Theme.pink, label: "Estrogen")
+                            legendDot(color: Theme.purple, label: "Progesterone")
                         }
                         HStack(spacing: 20) {
-                            legendDot(color: Color(hex: "3B82F6"), label: "LH")
-                            legendDot(color: Color(hex: "10B981"), label: "FSH")
+                            legendDot(color: Theme.blue, label: "LH")
+                            legendDot(color: Theme.green, label: "FSH")
                         }
                     }
                     .font(.caption)
@@ -112,7 +112,7 @@ struct HormoneChartView: View {
                                                 .clipShape(Capsule())
                                         }
                                     }
-                                    Text(phase.dayRange)
+                                    Text(CycleManager.dayRange(for: phase, cycleLength: viewModel.cycleLength, periodLength: viewModel.periodLength))
                                         .font(.caption)
                                         .foregroundColor(.secondary)
                                 }
@@ -125,7 +125,7 @@ struct HormoneChartView: View {
                                     ? phase.color.opacity(0.08)
                                     : Color.clear
                             )
-                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                            .clipShape(RoundedRectangle(cornerRadius: Theme.smallCardRadius))
                             .padding(.horizontal)
                         }
                     }
@@ -133,12 +133,7 @@ struct HormoneChartView: View {
                 .padding(.bottom, 20)
             }
             .background(
-                LinearGradient(
-                    colors: [Color(hex: "FDF2F8"), Color(hex: "F5F3FF")],
-                    startPoint: .top,
-                    endPoint: .bottom
-                )
-                .ignoresSafeArea()
+                Theme.backgroundRose.ignoresSafeArea()
             )
             .navigationTitle("Hormones")
         }

@@ -24,6 +24,8 @@ enum CyclePhase: String, CaseIterable {
         }
     }
     
+    /// Default day range for a standard 28-day cycle
+    /// For user-specific ranges, use CycleManager.dayRange(for:cycleLength:periodLength:)
     var dayRange: String {
         switch self {
         case .menstrual: return "Days 1–5"

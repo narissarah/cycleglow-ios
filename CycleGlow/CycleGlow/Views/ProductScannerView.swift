@@ -38,12 +38,7 @@ struct ProductScannerView: View {
                 .padding(.bottom, 30)
             }
             .background(
-                LinearGradient(
-                    colors: [Color(hex: "F5F3FF"), Color(hex: "FFF1F2")],
-                    startPoint: .top,
-                    endPoint: .bottom
-                )
-                .ignoresSafeArea()
+                Theme.backgroundPink.ignoresSafeArea()
             )
             .navigationTitle("Scanner")
             .sheet(isPresented: $showingCamera) {
@@ -99,13 +94,13 @@ struct ProductScannerView: View {
             } else {
                 ZStack {
                     RoundedRectangle(cornerRadius: 20)
-                        .fill(Color(hex: "8B5CF6").opacity(0.1))
+                        .fill(Theme.purple.opacity(0.1))
                         .frame(height: 200)
                     
                     VStack(spacing: 12) {
                         Image(systemName: "camera.viewfinder")
                             .font(.system(size: 48))
-                            .foregroundColor(Color(hex: "8B5CF6"))
+                            .foregroundColor(Theme.purple)
                         
                         Text("Scan Your Skincare")
                             .font(.title3.bold())
@@ -122,7 +117,7 @@ struct ProductScannerView: View {
             if novaService.isAnalyzing {
                 HStack(spacing: 8) {
                     ProgressView()
-                        .tint(Color(hex: "8B5CF6"))
+                        .tint(Theme.purple)
                     Text("Analyzing ingredients...")
                         .font(.caption)
                         .foregroundColor(.secondary)
@@ -144,7 +139,7 @@ struct ProductScannerView: View {
                     .font(.subheadline.bold())
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 14)
-                    .background(Color(hex: "8B5CF6"))
+                    .background(Theme.purple)
                     .foregroundColor(.white)
                     .clipShape(RoundedRectangle(cornerRadius: 12))
             }
@@ -157,7 +152,7 @@ struct ProductScannerView: View {
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 14)
                     .background(.ultraThinMaterial)
-                    .foregroundColor(Color(hex: "8B5CF6"))
+                    .foregroundColor(Theme.purple)
                     .clipShape(RoundedRectangle(cornerRadius: 12))
             }
         }
@@ -280,9 +275,9 @@ struct ProductScannerView: View {
     private func step(number: String, icon: String, text: String) -> some View {
         HStack(spacing: 12) {
             Image(systemName: icon)
-                .foregroundColor(Color(hex: "8B5CF6"))
+                .foregroundColor(Theme.purple)
                 .frame(width: 28, height: 28)
-                .background(Color(hex: "8B5CF6").opacity(0.12))
+                .background(Theme.purple.opacity(0.12))
                 .clipShape(Circle())
             
             Text(text)
@@ -358,7 +353,7 @@ struct ProductScannerView: View {
                     Button("Close") {
                         showingCamera = false
                     }
-                    .foregroundColor(Color(hex: "8B5CF6"))
+                    .foregroundColor(Theme.purple)
                     .padding(.top)
                 }
             }

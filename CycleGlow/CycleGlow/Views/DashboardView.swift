@@ -2,13 +2,18 @@ import SwiftUI
 
 struct DashboardView: View {
     @Environment(CycleViewModel.self) private var viewModel
+    @State private var showPeriodLog = false
+    @State private var showHistory = false
     
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(spacing: 20) {
+                VStack(spacing: Theme.sectionSpacing) {
                     // Cycle Wheel
                     cycleWheel
+                    
+                    // Period Log Button
+                    periodLogButton
                     
                     // Phase Card
                     phaseCard
@@ -16,7 +21,7 @@ struct DashboardView: View {
                     // Quick Stats
                     HStack(spacing: 12) {
                         statCard(title: "Day", value: "\(viewModel.currentDay)", subtitle: "of \(viewModel.cycleLength)", color: viewModel.currentPhase.color)
-                        statCard(title: "Next Period", value: "\(viewModel.daysUntilNextPeriod)", subtitle: "days", color: Color(hex: "E11D48"))
+                        statCard(title: "Next Period", value: "\(viewModel.daysUntilNextPeriod)", subtitle: "days", color: Theme.rose)
                     }
                     .padding(.horizontal)
                     
@@ -29,25 +34,61 @@ struct DashboardView: View {
                 .padding(.bottom, 20)
             }
             .background(
-                LinearGradient(
-                    colors: [Color(hex: "F5F3FF"), Color(hex: "FFF7ED")],
-                    startPoint: .top,
-                    endPoint: .bottom
-                )
-                .ignoresSafeArea()
+                Theme.backgroundLight.ignoresSafeArea()
             )
             .navigationTitle("CycleGlow")
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        showHistory = true
+                    } label: {
+                        Image(systemName: "clock.arrow.circlepath")
+                            .foregroundColor(Theme.purple)
+                    }
+                }
+            }
+            .sheet(isPresented: $showPeriodLog) {
+                PeriodLogView()
+                    .environment(viewModel)
+            }
+            .sheet(isPresented: $showHistory) {
+                CycleHistoryView()
+                    .environment(viewModel)
+            }
         }
+    }
+    
+    // MARK: - Period Log Button
+    
+    var periodLogButton: some View {
+        Button {
+            showPeriodLog = true
+        } label: {
+            HStack {
+                Image(systemName: viewModel.hasOngoingPeriod ? "drop.fill" : "plus.circle.fill")
+                    .foregroundColor(.white)
+                Text(viewModel.hasOngoingPeriod ? "Log Period End" : "Log Period Start")
+                    .font(.subheadline.bold())
+                    .foregroundColor(.white)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 12)
+            .background(
+                viewModel.hasOngoingPeriod
+                    ? LinearGradient(colors: [Theme.rose, Theme.pink], startPoint: .leading, endPoint: .trailing)
+                    : Theme.primaryGradient
+            )
+            .clipShape(RoundedRectangle(cornerRadius: Theme.buttonRadius))
+        }
+        .padding(.horizontal)
     }
     
     var cycleWheel: some View {
         ZStack {
-            // Background ring
             Circle()
                 .stroke(Color.gray.opacity(0.15), lineWidth: 12)
                 .frame(width: 200, height: 200)
             
-            // Phase segments
             Circle()
                 .trim(from: 0, to: viewModel.cycleProgress)
                 .stroke(
@@ -62,7 +103,6 @@ struct DashboardView: View {
                 .rotationEffect(.degrees(-90))
                 .animation(.easeInOut, value: viewModel.cycleProgress)
             
-            // Center content
             VStack(spacing: 4) {
                 Image(systemName: viewModel.currentPhase.icon)
                     .font(.title)
@@ -70,7 +110,7 @@ struct DashboardView: View {
                 
                 Text("Day \(viewModel.currentDay)")
                     .font(.title2.bold())
-                    .foregroundColor(Color(hex: "1E1B4B"))
+                    .foregroundColor(Theme.navy)
                 
                 Text(viewModel.currentPhase.rawValue)
                     .font(.caption)
@@ -88,7 +128,7 @@ struct DashboardView: View {
                 Text(viewModel.currentPhase.rawValue + " Phase")
                     .font(.headline)
                 Spacer()
-                Text(viewModel.currentPhase.dayRange)
+                Text(CycleManager.dayRange(for: viewModel.currentPhase, cycleLength: viewModel.cycleLength, periodLength: viewModel.periodLength))
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
@@ -99,7 +139,7 @@ struct DashboardView: View {
         }
         .padding()
         .background(.ultraThinMaterial)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .clipShape(RoundedRectangle(cornerRadius: Theme.cardRadius))
         .padding(.horizontal)
     }
     
@@ -118,7 +158,7 @@ struct DashboardView: View {
         .frame(maxWidth: .infinity)
         .padding()
         .background(.ultraThinMaterial)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .clipShape(RoundedRectangle(cornerRadius: Theme.cardRadius))
     }
     
     // MARK: - Skincare Section
@@ -175,7 +215,7 @@ struct DashboardView: View {
         }
         .padding()
         .background(.ultraThinMaterial)
-        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .clipShape(RoundedRectangle(cornerRadius: Theme.smallCardRadius))
         .padding(.horizontal)
     }
     
@@ -226,7 +266,7 @@ struct DashboardView: View {
         }
         .padding()
         .background(.ultraThinMaterial)
-        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .clipShape(RoundedRectangle(cornerRadius: Theme.smallCardRadius))
         .padding(.horizontal)
     }
 }

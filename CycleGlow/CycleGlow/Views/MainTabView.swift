@@ -22,7 +22,12 @@ struct MainTabView: View {
                 .tabItem {
                     Label("Log", systemImage: "square.and.pencil")
                 }
+            
+            SettingsView()
+                .tabItem {
+                    Label("Settings", systemImage: "gearshape.fill")
+                }
         }
-        .tint(Color(hex: "8B5CF6"))
+        .tint(Theme.purple)
     }
 }
