@@ -19,6 +19,12 @@ struct DashboardView: View {
                         statCard(title: "Next Period", value: "\(viewModel.daysUntilNextPeriod)", subtitle: "days", color: Color(hex: "E11D48"))
                     }
                     .padding(.horizontal)
+                    
+                    // Skincare Section
+                    skincareSection
+                    
+                    // Nutrition Section
+                    nutritionSection
                 }
                 .padding(.bottom, 20)
             }
@@ -113,5 +119,114 @@ struct DashboardView: View {
         .padding()
         .background(.ultraThinMaterial)
         .clipShape(RoundedRectangle(cornerRadius: 16))
+    }
+    
+    // MARK: - Skincare Section
+    
+    var skincareSection: some View {
+        VStack(spacing: 16) {
+            HStack {
+                Image(systemName: "sparkles")
+                    .foregroundColor(viewModel.currentPhase.color)
+                Text("\(viewModel.currentPhase.rawValue) Phase Skincare")
+                    .font(.headline)
+                Spacer()
+            }
+            .padding(.horizontal)
+            
+            HStack(spacing: 16) {
+                legendItem(color: .green, label: "Great")
+                legendItem(color: .yellow, label: "Okay")
+                legendItem(color: .red, label: "Avoid")
+            }
+            .font(.caption)
+            .padding(.horizontal)
+            
+            ForEach(viewModel.currentPhase.skincareAdvice) { item in
+                skincareCard(item)
+            }
+        }
+    }
+    
+    func skincareCard(_ item: SkincareItem) -> some View {
+        HStack(spacing: 12) {
+            Image(systemName: item.status.icon)
+                .foregroundColor(item.status.color)
+                .font(.title3)
+                .frame(width: 30)
+            
+            VStack(alignment: .leading, spacing: 4) {
+                Text(item.name)
+                    .font(.subheadline.bold())
+                Text(item.reason)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            
+            Spacer()
+            
+            Text(item.status.label)
+                .font(.caption2.bold())
+                .foregroundColor(item.status.color)
+                .padding(.horizontal, 8)
+                .padding(.vertical, 4)
+                .background(item.status.color.opacity(0.15))
+                .clipShape(Capsule())
+        }
+        .padding()
+        .background(.ultraThinMaterial)
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .padding(.horizontal)
+    }
+    
+    func legendItem(color: Color, label: String) -> some View {
+        HStack(spacing: 4) {
+            Circle()
+                .fill(color)
+                .frame(width: 8, height: 8)
+            Text(label)
+                .foregroundColor(.secondary)
+        }
+    }
+    
+    // MARK: - Nutrition Section
+    
+    var nutritionSection: some View {
+        VStack(spacing: 16) {
+            HStack {
+                Image(systemName: "leaf.fill")
+                    .foregroundColor(viewModel.currentPhase.color)
+                Text("\(viewModel.currentPhase.rawValue) Phase Nutrition")
+                    .font(.headline)
+                Spacer()
+            }
+            .padding(.horizontal)
+            
+            ForEach(viewModel.currentPhase.nutritionAdvice) { item in
+                nutritionCard(item)
+            }
+        }
+    }
+    
+    func nutritionCard(_ item: NutritionItem) -> some View {
+        HStack(spacing: 12) {
+            Text(item.emoji)
+                .font(.title2)
+                .frame(width: 40)
+            
+            VStack(alignment: .leading, spacing: 4) {
+                Text(item.name)
+                    .font(.subheadline.bold())
+                Text(item.reason)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            
+            Spacer()
+        }
+        .padding()
+        .background(.ultraThinMaterial)
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .padding(.horizontal)
     }
 }

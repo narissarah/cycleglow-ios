@@ -5,22 +5,12 @@ struct MainTabView: View {
         TabView {
             DashboardView()
                 .tabItem {
-                    Label("Dashboard", systemImage: "circle.grid.3x3.fill")
-                }
-            
-            SkincareView()
-                .tabItem {
-                    Label("Skincare", systemImage: "sparkles")
+                    Label("Home", systemImage: "house.fill")
                 }
             
             ProductScannerView()
                 .tabItem {
                     Label("Scanner", systemImage: "camera.viewfinder")
-                }
-            
-            NutritionView()
-                .tabItem {
-                    Label("Nutrition", systemImage: "leaf.fill")
                 }
             
             HormoneChartView()
