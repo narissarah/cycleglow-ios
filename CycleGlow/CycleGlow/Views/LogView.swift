@@ -27,6 +27,8 @@ struct LogView: View {
                                         )
                                         .clipShape(Circle())
                                 }
+                                .accessibilityLabel("Mood level \(level) of 5, \(moodLabel(level))")
+                                .accessibilityAddTraits(viewModel.todayMood == level ? .isSelected : [])
                             }
                         }
                     }
@@ -77,6 +79,8 @@ struct LogView: View {
                                                 : .gray.opacity(0.3)
                                         )
                                 }
+                                .accessibilityLabel("Energy level \(level) of 5")
+                                .accessibilityAddTraits(level <= viewModel.todayEnergy ? .isSelected : [])
                             }
                         }
                     }
@@ -112,6 +116,8 @@ struct LogView: View {
                                     )
                                     .clipShape(RoundedRectangle(cornerRadius: 8))
                                 }
+                                .accessibilityLabel("\(symptom.rawValue)")
+                                .accessibilityAddTraits(viewModel.todaySymptoms.contains(symptom) ? .isSelected : [])
                             }
                         }
                     }
@@ -183,6 +189,17 @@ struct LogView: View {
         case 4: return "🙂"
         case 5: return "😊"
         default: return "😐"
+        }
+    }
+    
+    func moodLabel(_ level: Int) -> String {
+        switch level {
+        case 1: return "very sad"
+        case 2: return "sad"
+        case 3: return "neutral"
+        case 4: return "happy"
+        case 5: return "very happy"
+        default: return "neutral"
         }
     }
 }

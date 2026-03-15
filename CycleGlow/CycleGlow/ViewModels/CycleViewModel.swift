@@ -115,6 +115,11 @@ class CycleViewModel {
     func savePreferences() {
         guard let context = modelContext else { return }
         
+        // Validate: periodLength must be less than cycleLength
+        if periodLength >= cycleLength {
+            periodLength = min(periodLength, cycleLength - 3)
+        }
+        
         let descriptor = FetchDescriptor<UserPreferences>()
         if let prefs = try? context.fetch(descriptor).first {
             prefs.cycleLength = cycleLength
@@ -138,7 +143,41 @@ class CycleViewModel {
             )
             context.insert(prefs)
         }
-        try? context.save()
+        do {
+            try context.save()
+        } catch {
+            print("CycleGlow: Failed to save preferences: \(error)")
+        }
+        
+        // Reschedule notifications whenever preferences change
+        scheduleNotifications()
+    }
+    
+    /// Request notification permission and schedule notifications
+    func requestNotificationPermissionIfNeeded() {
+        Task {
+            let manager = NotificationManager.shared
+            await manager.checkAuthorizationStatus()
+            if !manager.isAuthorized {
+                await manager.requestPermission()
+            }
+            scheduleNotifications()
+        }
+    }
+    
+    /// Reschedule all notifications based on current preferences
+    func scheduleNotifications() {
+        Task {
+            await NotificationManager.shared.rescheduleAll(
+                lastPeriodStart: lastPeriodStart,
+                cycleLength: cycleLength,
+                periodLength: periodLength,
+                notifyPeriodReminder: notifyPeriodReminder,
+                periodReminderDays: periodReminderDays,
+                notifyLogReminder: notifyLogReminder,
+                notifyOvulation: notifyOvulation
+            )
+        }
     }
     
     // MARK: - Daily Log Persistence
@@ -146,16 +185,40 @@ class CycleViewModel {
     func saveLog() {
         guard let context = modelContext else { return }
         
-        let entry = PersistedDailyLog(
-            date: Date(),
-            mood: todayMood,
-            skinCondition: todaySkin.rawValue,
-            energy: todayEnergy,
-            symptomsList: todaySymptoms.map(\.rawValue).joined(separator: ","),
-            notes: todayNotes
+        // Check for existing log today (upsert)
+        let calendar = Calendar.current
+        let startOfDay = calendar.startOfDay(for: Date())
+        let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay)!
+        
+        let descriptor = FetchDescriptor<PersistedDailyLog>(
+            predicate: #Predicate { $0.date >= startOfDay && $0.date < endOfDay }
         )
-        context.insert(entry)
-        try? context.save()
+        
+        if let existing = try? context.fetch(descriptor).first {
+            // Update existing entry
+            existing.mood = todayMood
+            existing.skinCondition = todaySkin.rawValue
+            existing.energy = todayEnergy
+            existing.symptomsList = todaySymptoms.map(\.rawValue).joined(separator: ",")
+            existing.notes = todayNotes
+        } else {
+            // Create new entry
+            let entry = PersistedDailyLog(
+                date: Date(),
+                mood: todayMood,
+                skinCondition: todaySkin.rawValue,
+                energy: todayEnergy,
+                symptomsList: todaySymptoms.map(\.rawValue).joined(separator: ","),
+                notes: todayNotes
+            )
+            context.insert(entry)
+        }
+        
+        do {
+            try context.save()
+        } catch {
+            print("CycleGlow: Failed to save daily log: \(error)")
+        }
         
         // Reset notes
         todayNotes = ""
@@ -197,8 +260,14 @@ class CycleViewModel {
         )
         
         if let ongoing = try? context.fetch(descriptor).first {
+            // Validate: end date must be >= start date
+            guard date >= ongoing.startDate else { return }
             ongoing.endDate = date
-            try? context.save()
+            do {
+                try context.save()
+            } catch {
+                print("CycleGlow: Failed to save period end: \(error)")
+            }
         }
     }
     
@@ -236,20 +305,36 @@ class CycleViewModel {
     
     // MARK: - Data Export
     
+    private static let csvDateFormatter: DateFormatter = {
+        let f = DateFormatter()
+        f.dateFormat = "yyyy-MM-dd"
+        f.locale = Locale(identifier: "en_US_POSIX")
+        return f
+    }()
+    
+    private func csvEscape(_ text: String) -> String {
+        let escaped = text.replacingOccurrences(of: "\"", with: "\"\"")
+        return "\"\(escaped)\""
+    }
+    
     func exportCSV() -> String {
-        var csv = "Date,Mood,Skin,Energy,Symptoms,Notes\n"
+        let df = Self.csvDateFormatter
+        
+        var csv = "Date,Cycle Day,Phase,Mood,Skin,Energy,Symptoms,Notes\n"
         for log in fetchLogs().reversed() {
-            let dateStr = log.date.formatted(date: .abbreviated, time: .omitted)
+            let dateStr = df.string(from: log.date)
+            let day = CycleManager.currentDay(lastPeriodStart: lastPeriodStart, cycleLength: cycleLength)
+            let phase = CycleManager.phase(day: day, cycleLength: cycleLength, periodLength: periodLength)
             let symptomsStr = log.symptomsList.replacingOccurrences(of: ",", with: ";")
-            csv += "\"\(dateStr)\",\(log.mood),\"\(log.skinCondition)\",\(log.energy),\"\(symptomsStr)\",\"\(log.notes)\"\n"
+            csv += "\(dateStr),\(day),\(phase.rawValue),\(log.mood),\(log.skinCondition),\(log.energy),\(csvEscape(symptomsStr)),\(csvEscape(log.notes))\n"
         }
         
-        csv += "\nPeriod Start,Period End,Duration\n"
+        csv += "\nPeriod Start,Period End,Duration (days)\n"
         for period in fetchPeriods().reversed() {
-            let start = period.startDate.formatted(date: .abbreviated, time: .omitted)
-            let end = period.endDate?.formatted(date: .abbreviated, time: .omitted) ?? "Ongoing"
-            let dur = period.duration.map { "\($0) days" } ?? "–"
-            csv += "\"\(start)\",\"\(end)\",\"\(dur)\"\n"
+            let start = df.string(from: period.startDate)
+            let end = period.endDate.map { df.string(from: $0) } ?? "Ongoing"
+            let dur = period.duration.map { "\($0)" } ?? ""
+            csv += "\(start),\(end),\(dur)\n"
         }
         
         return csv

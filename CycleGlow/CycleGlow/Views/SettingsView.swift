@@ -93,9 +93,18 @@ struct SettingsView: View {
             .onChange(of: viewModel.cycleLength) { _, _ in viewModel.savePreferences() }
             .onChange(of: viewModel.periodLength) { _, _ in viewModel.savePreferences() }
             .onChange(of: viewModel.lastPeriodStart) { _, _ in viewModel.savePreferences() }
-            .onChange(of: viewModel.notifyPeriodReminder) { _, _ in viewModel.savePreferences() }
-            .onChange(of: viewModel.notifyLogReminder) { _, _ in viewModel.savePreferences() }
-            .onChange(of: viewModel.notifyOvulation) { _, _ in viewModel.savePreferences() }
+            .onChange(of: viewModel.notifyPeriodReminder) { _, newValue in
+                if newValue { viewModel.requestNotificationPermissionIfNeeded() }
+                viewModel.savePreferences()
+            }
+            .onChange(of: viewModel.notifyLogReminder) { _, newValue in
+                if newValue { viewModel.requestNotificationPermissionIfNeeded() }
+                viewModel.savePreferences()
+            }
+            .onChange(of: viewModel.notifyOvulation) { _, newValue in
+                if newValue { viewModel.requestNotificationPermissionIfNeeded() }
+                viewModel.savePreferences()
+            }
             .onChange(of: viewModel.periodReminderDays) { _, _ in viewModel.savePreferences() }
             .alert("Reset Onboarding?", isPresented: $showResetAlert) {
                 Button("Cancel", role: .cancel) { }

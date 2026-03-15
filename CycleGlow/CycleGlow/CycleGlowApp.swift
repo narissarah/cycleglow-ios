@@ -9,13 +9,13 @@ struct CycleGlowApp: App {
     
     init() {
         do {
-            let schema = Schema([
-                UserPreferences.self,
-                PersistedDailyLog.self,
-                PeriodEntry.self
-            ])
+            let schema = Schema(versionedSchema: SchemaV1.self)
             let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
-            modelContainer = try ModelContainer(for: schema, configurations: [config])
+            modelContainer = try ModelContainer(
+                for: schema,
+                migrationPlan: CycleGlowMigrationPlan.self,
+                configurations: [config]
+            )
         } catch {
             fatalError("Could not create ModelContainer: \(error)")
         }

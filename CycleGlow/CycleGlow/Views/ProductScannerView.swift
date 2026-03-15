@@ -350,11 +350,18 @@ struct ProductScannerView: View {
                         .font(.caption)
                         .foregroundColor(.gray)
                     
-                    Button("Close") {
-                        showingCamera = false
+                    Button("Open Settings") {
+                        if let url = URL(string: UIApplication.openSettingsURLString) {
+                            UIApplication.shared.open(url)
+                        }
                     }
                     .foregroundColor(Theme.purple)
                     .padding(.top)
+                    
+                    Button("Close") {
+                        showingCamera = false
+                    }
+                    .foregroundColor(.gray)
                 }
             }
         }
@@ -362,6 +369,9 @@ struct ProductScannerView: View {
             await cameraController.requestPermission()
             cameraController.setupSession()
             cameraController.startSession()
+        }
+        .onDisappear {
+            cameraController.stopSession()
         }
     }
     

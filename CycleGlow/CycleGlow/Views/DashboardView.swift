@@ -117,6 +117,8 @@ struct DashboardView: View {
                     .foregroundColor(.secondary)
             }
         }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Cycle day \(viewModel.currentDay) of \(viewModel.cycleLength), \(viewModel.currentPhase.rawValue) phase, \(viewModel.daysUntilNextPeriod) days until next period")
         .padding(.top, 20)
     }
     

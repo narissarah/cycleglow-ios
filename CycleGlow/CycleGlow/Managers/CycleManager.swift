@@ -12,16 +12,19 @@ struct CycleManager {
     
     /// Determine cycle phase using proportional boundaries based on actual cycle length
     static func phase(day: Int, cycleLength: Int, periodLength: Int) -> CyclePhase {
-        if day <= periodLength { return .menstrual }
+        let clampedDay = max(1, min(day, cycleLength))
+        let clampedPeriod = min(periodLength, cycleLength - 3) // Ensure at least 3 days for other phases
+        
+        if clampedDay <= clampedPeriod { return .menstrual }
         
         // Scale phase boundaries proportionally to cycle length
         // Standard 28-day: follicular ends ~day 13, ovulatory ~14-16, luteal rest
         let ratio = Double(cycleLength) / 28.0
-        let follicularEnd = Int(round(13.0 * ratio))
-        let ovulatoryEnd = Int(round(16.0 * ratio))
+        let follicularEnd = max(clampedPeriod + 1, Int(round(13.0 * ratio)))
+        let ovulatoryEnd = max(follicularEnd + 1, Int(round(16.0 * ratio)))
         
-        if day <= follicularEnd { return .follicular }
-        if day <= ovulatoryEnd { return .ovulatory }
+        if clampedDay <= follicularEnd { return .follicular }
+        if clampedDay <= ovulatoryEnd { return .ovulatory }
         return .luteal
     }
     
